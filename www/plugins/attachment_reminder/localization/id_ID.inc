@@ -1,0 +1,17 @@
+<?php
+
+/*
+ +-----------------------------------------------------------------------+
+ | Localization file of the Roundcube Webmail Archive plugin             |
+ | Copyright (C) The Roundcube Dev Team                                  |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
+ +-----------------------------------------------------------------------+
+*/
+
+$messages['missingattachment'] = "Kehilangan lampiran?";
+$messages['forgotattachment'] = "Apakah anda lupa melampirkan sebuah file?";
+$messages['reminderoption'] = "Ingatkan tentang lampiran yang terlupakan";
+$messages['keywords'] = "lampiran, file, terlampir, dilampirkan, melampirkan, lampiran tertutup, CV, sampul surat";

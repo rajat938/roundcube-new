@@ -1,0 +1,104 @@
+/**
+ * ident_switch - Account switcher styles.
+ *
+ * Copyright (C) 2026 Gecka
+ *
+ * Licensed under AGPL-3.0+.
+ *
+ * @url https://github.com/Gecka-apps/ident_switch
+ */
+
+/* Wrapper around <select> + badge */
+.ident-switch-wrapper {
+	display: inline-flex;
+	align-items: center;
+	width: 100%;
+}
+
+/* Account switcher <select>: hide native arrow, show SVG chevron.
+   Scoped to Elastic (.header-title.username) and Larry (#topline .topright) where
+   the switcher replaces a styled header label; Classic uses Roundcube's native
+   select rendering instead (see #taskbar rule below). */
+.header-title.username .ident-switch-wrapper select,
+#topline .topright .ident-switch-wrapper select {
+	cursor: pointer;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ccc'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.3em center;
+	background-size: 10px 6px;
+}
+
+/*
+ * Prevent flash of original username before JS prepends the switcher.
+ * The JS hides these elements at DOMReady, but the CSS rules below hide them
+ * earlier (during initial render) — only loaded when the switcher will actually
+ * be shown, so users without secondary accounts keep the default username display.
+ */
+
+/* Elastic skin: switcher is prepended inside .header-title.username.
+   Hide the original username via visibility on the parent (affects the text
+   node), then re-show the wrapper. Unlike color/font-size, this preserves the
+   parent's flex/line-height context, keeping the wrapper vertically centered. */
+.header-title.username {
+	visibility: hidden;
+}
+.header-title.username > *:not(.ident-switch-wrapper) {
+	display: none;
+}
+.header-title.username > .ident-switch-wrapper {
+	visibility: visible;
+}
+
+/* Larry skin: switcher is prepended next to .username inside #topline .topright */
+#topline .topright > .username {
+	display: none;
+}
+
+/* Larry skin: blend the <select> into the dark #topline header (Larry styles a
+   <span> here, not a <select>, so without these the native white control sticks
+   out on the dark background). */
+#topline .topright .ident-switch-wrapper {
+	width: auto;
+}
+#topline .topright .ident-switch-wrapper select {
+	background-color: transparent;
+	border: none;
+	box-shadow: none;
+	color: inherit;
+	font-weight: bold;
+	padding: 0 1.2em 0 0.25em;
+	text-overflow: ellipsis;
+}
+
+/* Classic skin: switcher is prepended inside #taskbar (right-aligned, nowrap, 24px tall).
+   Drop width:100% so it sits inline before the menu links instead of pushing them
+   off-screen. The select keeps Roundcube's default native rendering. */
+#taskbar > .ident-switch-wrapper {
+	width: auto;
+	vertical-align: middle;
+	margin-right: 8px;
+}
+#taskbar > .ident-switch-wrapper select {
+	max-width: 180px;
+	position: relative;
+	top: -2px;
+}
+
+/* Unread badge */
+.ident-switch-badge {
+	flex-shrink: 0;
+	min-width: 1.4em;
+	padding: 0.2em 0.5em;
+	font-size: 0.7em;
+	font-weight: bold;
+	line-height: 1.3;
+	text-align: center;
+	white-space: nowrap;
+	color: #fff;
+	background-color: #e74c3c;
+	border-radius: 1em;
+	margin-left: 0.3em;
+}

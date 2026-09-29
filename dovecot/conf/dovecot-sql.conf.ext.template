@@ -1,0 +1,8 @@
+# Template -- the real dovecot-sql.conf.ext is written at container start by
+# entrypoint.sh, which fills in DB_PASSWORD from the .env file. No password
+# is stored in git any more.
+driver = mysql
+connect = host=roundcubemail-mysql dbname=__DB_NAME__ user=__DB_USER__ password=__DB_PASSWORD__
+default_pass_scheme = PLAIN
+password_query = SELECT email as user, password FROM dovecot_users WHERE email='%u'
+user_query = SELECT '/var/mail/%u' as home, 5000 AS uid, 5000 AS gid FROM dovecot_users WHERE email='%u'

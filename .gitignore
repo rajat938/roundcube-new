@@ -1,0 +1,21 @@
+# ---- secrets: never commit ----
+.env
+.env.*
+!.env.example
+*.bak
+*.backup
+www/config/config.docker.inc.php
+www/config/config.old.php
+dovecot/conf/dovecot-sql.conf.ext
+
+# ---- data ----
+mail-mirror/
+maildir/
+www/logs/*
+!www/logs/.htaccess
+www/temp/*
+!www/temp/.htaccess
+
+# ---- junk ----
+*.zip
+__pycache__/

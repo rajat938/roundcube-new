@@ -1,0 +1,27 @@
+<?php
+
+/*
+ +-----------------------------------------------------------------------+
+ | Localization file of the Roundcube Webmail Archive plugin             |
+ |                                                                       |
+ | Copyright (C) The Roundcube Dev Team                                  |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
+ +-----------------------------------------------------------------------+
+*/
+
+$labels['buttontext'] = 'Goym í skjalasavni';
+$labels['buttontitle'] = 'Goym boðið í skjalasavni';
+$labels['archived'] = 'Goymt í skjalasavni';
+$labels['archivedreload'] = 'Goymt í skjalasavni. Endurinnles fyri at síggja nýggjar mappur.';
+$labels['archiveerror'] = 'Onkur boð kundu ikki leggjast í skjalagoymslu';
+$labels['archivefolder'] = 'Goym í skjalasavni';
+$labels['settingstitle'] = 'Goym í skjalasavni';
+$labels['archivetype'] = 'Deil skjalagoymslu við';
+$labels['archivetypeyear'] = 'Ár (t.d. Skjalagoymsla/2012)';
+$labels['archivetypemonth'] = 'Mánar(t.d. Skjalahgoymsla/2012/06)';
+$labels['archivetypefolder'] = 'Uppruna mappa';
+$labels['archivetypesender'] = 'Sendara teldupostur';
+$labels['unkownsender'] = 'ókent';

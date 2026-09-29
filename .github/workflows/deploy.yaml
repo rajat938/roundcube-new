@@ -1,0 +1,108 @@
+name: Deploy
+
+# Checks + image scans run on GitHub's machines for pushes and pull requests.
+# DEPLOY runs on your server (self-hosted runner) ONLY for a push to main --
+# never for a pull request. Keep this repository PRIVATE: in a public repo a
+# pull request can edit this file itself and target your server's runner.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tools
+        run: |
+          pip install --upgrade pip
+          pip install "flask==3.1.3" "werkzeug==3.1.8" "waitress==3.0.2" \
+            "PyMySQL==1.2.3" "imapclient==4.1.0" ruff
+
+      - name: Syntax check
+        run: python -m compileall -q sync account-manager tools
+
+      - name: Lint (serious errors only)
+        run: ruff check --select E9,F63,F7,F82 sync account-manager tools
+
+      - name: docker-compose.yml is valid (dummy secrets, never real ones)
+        run: |
+          printf 'DB_PASSWORD=x\nMYSQL_ROOT_PASSWORD=x\nROUNDCUBE_DES_KEY=x\nADMIN_PASSWORD_HASH=x\nSECRET_KEY=x\n' > .env
+          docker compose config --quiet
+          rm -f .env
+
+      # Blocks the deploy if a password/key gets committed.
+      # (www/vendor = Roundcube's own libraries; openpgp.min.js only contains
+      #  the text "BEGIN PGP PRIVATE KEY" as a marker, not a real key.)
+      - name: Trivy scan (committed secrets)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: secret
+          skip-dirs: www/vendor
+          skip-files: www/plugins/enigma/openpgp.min.js
+          format: table
+          exit-code: "1"
+
+      # Report only: Roundcube's bundled libraries are updated by upgrading
+      # Roundcube itself, so a finding here must not block your deploy.
+      - name: Trivy report (Roundcube libraries, does not block)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          scan-type: fs
+          scan-ref: www
+          scanners: vuln
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          exit-code: "0"
+
+  images:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [sync, account-manager]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ${{ matrix.image }} image
+        run: docker build -t ${{ matrix.image }}:ci ./${{ matrix.image }}
+
+      - name: Trivy scan (${{ matrix.image }} image)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          scan-type: image
+          image-ref: ${{ matrix.image }}:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          exit-code: "1"
+
+  deploy:
+    # only a real push to main -- pull requests never reach your server
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [checks, images]
+    runs-on: self-hosted
+    steps:
+      - name: Update code on the server and restart
+        run: |
+          cd ~/project/RoundCube_Mail-main
+          git pull --ff-only
+          docker compose up -d --build --remove-orphans
+          docker compose ps

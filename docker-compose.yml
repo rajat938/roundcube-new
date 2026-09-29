@@ -1,0 +1,154 @@
+# All passwords/keys come from the .env file next to this file (never commit .env).
+services:
+  roundcube:
+    build:
+     context: roundcube/
+     dockerfile: Dockerfile
+    container_name: roundcube
+    restart: always
+    # Plain HTTP only on the server itself -- users reach webmail over HTTPS
+    # through the caddy service (https://<server>:8444).
+    ports:
+      - "8081:80"
+    environment:
+      # internal Docker network, Dovecot has no TLS -> plain host (no tls://)
+      - ROUNDCUBEMAIL_DEFAULT_HOST=dovecot
+      - ROUNDCUBEMAIL_SMTP_SERVER=ssl://smtp.hostinger.com
+      - ROUNDCUBEMAIL_SMTP_PORT=465
+      - ROUNDCUBEMAIL_DB_TYPE=mysql
+      - ROUNDCUBEMAIL_DB_HOST=roundcubemail-mysql
+      - ROUNDCUBEMAIL_DB_USER=${DB_USER:-roundcube}
+      - ROUNDCUBEMAIL_DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD missing in .env}
+      - ROUNDCUBEMAIL_DB_NAME=${DB_NAME:-roundcubemail}
+      - ROUNDCUBEMAIL_DES_KEY=${ROUNDCUBE_DES_KEY:?ROUNDCUBE_DES_KEY missing in .env}
+      - ROUNDCUBEMAIL_PLUGINS=archive,zipdownload,newmail_notifier,ident_switch
+      - ROUNDCUBEMAIL_COMPOSER_PLUGINS=gecka/ident-switch
+    volumes:
+      - ./www:/var/www/html
+    depends_on:
+      - roundcubemail-mysql
+      - dovecot
+      - redis
+
+  roundcubemail-mysql:
+    image: mariadb:11
+    container_name: roundcube-db
+    restart: always
+    # Avoids the io_uring permission error WITHOUT turning off the seccomp
+    # sandbox (the old "seccomp=unconfined" weakened container isolation).
+    command: ["--innodb-use-native-aio=0"]
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD missing in .env}
+      - MYSQL_DATABASE=${DB_NAME:-roundcubemail}
+      - MYSQL_USER=${DB_USER:-roundcube}
+      - MYSQL_PASSWORD=${DB_PASSWORD:?DB_PASSWORD missing in .env}
+    volumes:
+      - rc_db_data:/var/lib/mysql
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv6.conf.default.disable_ipv6=1
+
+  redis:
+    image: redis:7-alpine
+    container_name: roundcube-redis
+    restart: always
+    # volatile-lru: never evicts login sessions to make room
+    command: redis-server --maxmemory 128mb --maxmemory-policy volatile-lru
+
+  dovecot:
+    build:
+      context: ./dovecot
+      dockerfile: Dockerfile
+    container_name: local-dovecot
+    restart: always
+    environment:
+      - DB_USER=${DB_USER:-roundcube}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD missing in .env}
+      - DB_NAME=${DB_NAME:-roundcubemail}
+    volumes:
+      # Set MAILDIR_PATH in .env to an absolute path, e.g. /srv/mail/maildir
+      - ${MAILDIR_PATH:-./mail-mirror/maildir}:/var/mail
+      - dovecot_indexes:/var/mail-indexes
+    depends_on:
+      - roundcubemail-mysql
+
+  # Hostinger -> local mirror (new mail within ~1s via IDLE, flag changes,
+  # new folders). Replaces the old imapsync-based sync-daemon.
+  sync-pull:
+    build: ./sync
+    container_name: mail-sync-pull
+    command: ["python3", "/app/pull.py"]
+    restart: always
+    env_file: sync.env          # sync settings (no secrets)
+    environment:              # only the secrets this container needs
+      - DB_HOST=roundcubemail-mysql
+      - DB_USER=${DB_USER:-roundcube}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD missing in .env}
+      - DB_NAME=${DB_NAME:-roundcubemail}
+      - LOCAL_IMAP_HOST=dovecot
+    depends_on:
+      - roundcubemail-mysql
+      - dovecot
+
+  # local mirror -> Hostinger (read/unread/flags + sent mail only; can never
+  # delete or move anything on Hostinger). Idle unless something changed.
+  sync-push:
+    build: ./sync
+    container_name: mail-sync-push
+    command: ["python3", "/app/push.py"]
+    restart: always
+    env_file: sync.env          # sync settings (no secrets)
+    environment:              # only the secrets this container needs
+      - DB_HOST=roundcubemail-mysql
+      - DB_USER=${DB_USER:-roundcube}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD missing in .env}
+      - DB_NAME=${DB_NAME:-roundcubemail}
+      - LOCAL_IMAP_HOST=dovecot
+    depends_on:
+      - roundcubemail-mysql
+      - dovecot
+
+  # Admin page for adding/pausing accounts. Web login + HTTPS via caddy.
+  # Not published on any host port -- only caddy can reach it.
+  account-manager:
+    build: ./account-manager
+    container_name: account-manager
+    restart: always
+    env_file: sync.env          # REMOTE_*/LOGIN_* settings (no secrets)
+    environment:              # only the secrets this container needs
+      - DB_HOST=roundcubemail-mysql
+      - DB_USER=${DB_USER:-roundcube}
+      - DB_PASSWORD=${DB_PASSWORD:?DB_PASSWORD missing in .env}
+      - DB_NAME=${DB_NAME:-roundcubemail}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH:?ADMIN_PASSWORD_HASH missing in .env}
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY missing in .env}
+    depends_on:
+      - roundcubemail-mysql
+
+  # HTTPS front door: admin page https://<server>:8443, webmail https://<server>:8444
+  # (see caddy/Caddyfile.domain to use a real domain + Let's Encrypt)
+  caddy:
+    image: caddy:2.10
+    container_name: admin-https
+    restart: always
+    ports:
+      - "8443:8443"   # admin page
+      - "8444:8444"   # webmail (Roundcube) over HTTPS
+    environment:
+      - ADMIN_SITE=${ADMIN_SITE:-:8443}
+      - WEBMAIL_SITE=${WEBMAIL_SITE:-:8444}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - account-manager
+      - roundcube
+
+volumes:
+  rc_db_data:
+  dovecot_indexes:
+  caddy_data:
+  caddy_config:
+

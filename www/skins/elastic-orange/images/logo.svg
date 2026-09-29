@@ -1,0 +1,49 @@
+<svg
+    version="1.2"
+    baseProfile="tiny-ps"
+    id="ASITUJ_FINAL_LOGO_SVG_front_icon"
+    data-name="ASITUJ FINAL LOGO SVG front icon"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    width="370.358"
+    height="370.358"
+    viewBox="0 0 370.358 370.358">
+
+    <title>Asituj Global Services</title>
+
+    <defs>
+        <linearGradient id="linear-gradient" x1="0.262" y1="0.203" x2="0.646" y2="0.991" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#f60"/>
+            <stop offset="1" stop-color="#ff9500"/>
+        </linearGradient>
+
+        <linearGradient id="linear-gradient-2" x1="0" y1="0.5" x2="1" y2="0.5" xlink:href="#linear-gradient"/>
+
+        <linearGradient id="linear-gradient-3" y1="0.5" x2="1" y2="0.5" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#ff9500"/>
+            <stop offset="1" stop-color="#f60"/>
+        </linearGradient>
+    </defs>
+
+    <path
+        id="Path_1452"
+        data-name="Path 1452"
+        d="M792.248,490.3h0L875.56,634.6a25.678,25.678,0,0,0,22.245,12.842h23.61c-2.645,3.091-5.441,6.1-8.341,9H651.4a185.225,185.225,0,0,0,300.956-27.185L872.084,490.286a46.086,46.086,0,0,0-79.831.008Z"
+        transform="translate(-607.064 -351.018)"
+        fill="url(#linear-gradient)"/>
+
+    <path
+        id="Path_1453"
+        data-name="Path 1453"
+        d="M755.477,552.774h0l83.363-144.29a25.686,25.686,0,0,0,0-25.687l-11.848-20.493c3.991.749,8,1.658,11.962,2.727l19.838,34.36h0L969.784,591.651A185.2,185.2,0,0,0,795.761,344.62l-80.216,139a46.106,46.106,0,0,0,39.932,69.153Z"
+        transform="translate(-610.055 -344.62)"
+        fill="url(#linear-gradient-2)"/>
+
+    <path
+        id="Path_1454"
+        data-name="Path 1454"
+        d="M829.561,552.917H662.914a25.693,25.693,0,0,0-22.241,12.836l-11.8,20.472c-1.354-3.791-2.569-7.754-3.636-11.724l19.838-34.36h0L756.085,347.89A185.216,185.216,0,0,0,629.15,622.109H789.638a46.13,46.13,0,0,0,39.924-69.191Z"
+        transform="translate(-604.625 -344.79)"
+        fill="url(#linear-gradient-3)"/>
+
+</svg>

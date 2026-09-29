@@ -1,0 +1,20 @@
+# Use this instead of Caddyfile when you have a domain for the admin page
+# (e.g. admin.asituj.com -> this server). Set ADMIN_SITE in .env and
+# publish ports 80 and 443 for the caddy service. Caddy then gets and
+# renews a free Let's Encrypt certificate automatically.
+{
+	admin off
+}
+
+{$ADMIN_SITE} {
+	encode gzip
+	header -Server
+	reverse_proxy account-manager:5000
+}
+
+# Webmail: set WEBMAIL_SITE=mail.yourdomain.com in .env (DNS -> this server)
+{$WEBMAIL_SITE} {
+	encode gzip
+	header -Server
+	reverse_proxy roundcube:80
+}

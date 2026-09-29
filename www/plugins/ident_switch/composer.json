@@ -1,0 +1,67 @@
+{
+    "name": "gecka/ident-switch",
+    "type": "roundcube-plugin",
+    "description": "This plugin allows users to switch between different accounts (including remote) in single Roundcube session.",
+    "homepage": "https://github.com/Gecka-Apps/roundcube-ident_switch",
+    "keywords": ["identity", "imap", "mail", "switch"],
+    "license": "AGPL-3.0+",
+    "authors": [
+        {
+            "name": "Boris Gulay",
+            "email": "boris@gulay.name",
+            "role": "Original Developer"
+        },
+        {
+            "name": "Christian Landvogt",
+            "email": "chris@lvgt.de",
+            "role": "Contributor"
+        },
+        {
+            "name": "Gergely Papp",
+            "email": "telirium@gmail.com",
+            "role": "Contributor"
+        },
+        {
+            "name": "Laurent Dinclaux",
+            "email": "laurent@gecka.nc",
+            "role": "Maintainer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "roundcube/plugin-installer": ">=0.3.0",
+        "ext-ctype": "*"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.0"
+    },
+    "conflict": {
+        "boressoft/ident_switch": "*",
+        "elm/identity_smtp": "*",
+        "toteph42/identity_switch": "*"
+    },
+    "support": {
+        "issues": "https://github.com/Gecka-Apps/roundcube-ident_switch/issues"
+    },
+    "extra": {
+        "roundcube": {
+            "min-version": "1.6",
+            "sql-dir": "SQL"
+        }
+    },
+    "scripts": {
+        "phpcs": "phpcs",
+        "phpcbf": "phpcbf"
+    },
+    "config": {
+        "allow-plugins": {
+            "roundcube/plugin-installer": true
+        }
+    }
+}

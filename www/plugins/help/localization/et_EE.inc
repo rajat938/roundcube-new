@@ -1,0 +1,19 @@
+<?php
+
+/*
+ +-----------------------------------------------------------------------+
+ | Localization file of the Roundcube Webmail Help plugin                |
+ |                                                                       |
+ | Copyright (C) The Roundcube Dev Team                                  |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
+ +-----------------------------------------------------------------------+
+*/
+
+$labels['help'] = 'Abi';
+$labels['about'] = 'Roundcube info';
+$labels['license'] = 'Litsents';
+$labels['csrfinfo'] = 'Loe lisa CSRF kohta ja kuidas me sind kaitseme';
+$labels['arialabelhelpcontent'] = 'Abiinfo sisu';

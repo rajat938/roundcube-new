@@ -1,0 +1,16 @@
+<?php
+
+/*
+ +-----------------------------------------------------------------------+
+ | Localization file of the Roundcube Webmail New User Dialog plugin     |
+ |                                                                       |
+ | Copyright (C) The Roundcube Dev Team                                  |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
+ +-----------------------------------------------------------------------+
+*/
+
+$labels['identitydialogtitle'] = '請完成填寫您的身份資訊';
+$labels['identitydialoghint'] = '此視窗只會於第一次登入時出現';

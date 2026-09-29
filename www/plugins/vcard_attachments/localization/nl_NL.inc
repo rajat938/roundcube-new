@@ -1,0 +1,21 @@
+<?php
+
+/*
+ +-----------------------------------------------------------------------+
+ | Localization file of the Roundcube Webmail Vcard Attachments plugin   |
+ |                                                                       |
+ | Copyright (C) The Roundcube Dev Team                                  |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
+ +-----------------------------------------------------------------------+
+*/
+
+$labels['addvcardmsg'] = 'Voeg vCard toe aan adresboek';
+$labels['vcardsavefailed'] = 'Kan vCard niet opslaan';
+$labels['attachvcard'] = 'vCard toevoegen';
+$labels['vcardattached'] = 'vCard bijgevoegd';
+$labels['vcard'] = 'vCard';
+$labels['forwardvcard'] = 'vCard doorsturen';
+$labels['importedsuccessfully'] = 'Contact(en) succesvol geïmporteerd naar het adresboek.';

@@ -1,0 +1,16 @@
+<?php
+
+/*
+ +-----------------------------------------------------------------------+
+ | Localization file of the Roundcube Webmail New User Dialog plugin     |
+ |                                                                       |
+ | Copyright (C) The Roundcube Dev Team                                  |
+ |                                                                       |
+ | Licensed under the GNU General Public License version 3 or            |
+ | any later version with exceptions for skins & plugins.                |
+ | See the README file for a full license statement.                     |
+ +-----------------------------------------------------------------------+
+*/
+
+$labels['identitydialogtitle'] = 'Si us plau, completeu la identitat del vostre remitent';
+$labels['identitydialoghint'] = 'Aquest quadre només apareix un cop a la primera entrada.';
