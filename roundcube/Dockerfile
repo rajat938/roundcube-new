@@ -19,4 +19,5 @@ RUN if ! php -m | grep -qi '^redis$'; then \
 
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN  chmod +x /docker-entrypoint.sh 
+# strip Windows line endings (CRLF) -- otherwise: "exec /docker-entrypoint.sh: no such file or directory"
+RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh 

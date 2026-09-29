@@ -9,7 +9,7 @@ services:
     # Plain HTTP only on the server itself -- users reach webmail over HTTPS
     # through the caddy service (https://<server>:8444).
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
     environment:
       # internal Docker network, Dovecot has no TLS -> plain host (no tls://)
       - ROUNDCUBEMAIL_DEFAULT_HOST=dovecot
@@ -67,6 +67,8 @@ services:
       - DB_NAME=${DB_NAME:-roundcubemail}
     volumes:
       # Set MAILDIR_PATH in .env to an absolute path, e.g. /srv/mail/maildir
+      # Docker Desktop on Windows: set MAILDIR_PATH=mail_data (a Docker
+      # volume) -- Windows folders can't hold mail files (':' in names).
       - ${MAILDIR_PATH:-./mail-mirror/maildir}:/var/mail
       - dovecot_indexes:/var/mail-indexes
     depends_on:
@@ -148,6 +150,7 @@ services:
 
 volumes:
   rc_db_data:
+  mail_data:
   dovecot_indexes:
   caddy_data:
   caddy_config:

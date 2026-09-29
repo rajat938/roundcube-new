@@ -517,7 +517,7 @@ def upload_flags(flags):
 
 
 def appendable_flags(flags):
-    """Flags for a copy written into the LOCAL mirror: everything except
+    r"""Flags for a copy written into the LOCAL mirror: everything except
     \Recent (server-managed) and \Deleted (a pending delete must not be
     mirrored -- the mail would vanish locally on the next expunge)."""
     keep = [f for f in (flags or ()) if f.lower() not in ("\\recent", "\\deleted")]
@@ -554,6 +554,21 @@ SCHEMA = [
         last_synced_at DATETIME DEFAULT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
+    """,
+    # Webmail logins (Dovecot reads this table). Created here too, so
+    # webmail login never depends on the admin page having started.
+    """
+    CREATE TABLE IF NOT EXISTS dovecot_users (
+        email VARCHAR(255) PRIMARY KEY,
+        password VARCHAR(255) NOT NULL,
+        home VARCHAR(255) NOT NULL
+    )
+    """,
+    # Self-repair: every mirrored account needs a webmail login. Only
+    # MISSING rows are added (existing logins are never changed).
+    """
+    INSERT IGNORE INTO dovecot_users (email, password, home)
+    SELECT email, local_password, CONCAT('/var/mail/', email) FROM mirror_accounts
     """,
     # Per-folder bookmarks. pull.py owns the remote_* / status columns,
     # push.py owns the local_* columns, so they never overwrite each other.

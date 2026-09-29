@@ -146,6 +146,9 @@ SCHEMA = [
         email VARCHAR(255) PRIMARY KEY,
         password VARCHAR(255) NOT NULL,
         home VARCHAR(255) NOT NULL)""",
+    # self-repair: add a webmail login for any mirrored account missing one
+    """INSERT IGNORE INTO dovecot_users (email, password, home)
+        SELECT email, local_password, CONCAT('/var/mail/', email) FROM mirror_accounts""",
     """CREATE TABLE IF NOT EXISTS sync_progress (
         account_email VARCHAR(255) NOT NULL,
         folder VARCHAR(255) NOT NULL,
