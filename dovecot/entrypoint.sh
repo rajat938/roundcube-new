@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 mkdir -p /var/mail /var/mail-indexes
-chown -R 5000:5000 /var/mail /var/mail-indexes
+chown -R 5000:5000 /var/mail /var/mail-indexes 2>/dev/null \
+    || echo "warning: could not chown /var/mail (Windows folder?) -- use MAILDIR_PATH=mail_data" >&2
 
 # Write the SQL config from the template, taking the DB credentials from the
 # environment (.env) instead of a file committed to git.

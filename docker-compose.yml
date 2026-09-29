@@ -9,7 +9,9 @@ services:
     # Plain HTTP only on the server itself -- users reach webmail over HTTPS
     # through the caddy service (https://<server>:8444).
     ports:
-      - "127.0.0.1:8081:80"
+      # WEBMAIL_HTTP_BIND=0.0.0.0 in .env if another reverse proxy (nginx,
+      # Nginx Proxy Manager) on another machine/container forwards to :8081.
+      - "${WEBMAIL_HTTP_BIND:-127.0.0.1}:8081:80"
     environment:
       # internal Docker network, Dovecot has no TLS -> plain host (no tls://)
       - ROUNDCUBEMAIL_DEFAULT_HOST=dovecot
